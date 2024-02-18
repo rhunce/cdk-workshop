@@ -11,6 +11,8 @@ export interface HitCounterProps {
 export class HitCounter extends Construct {
   // allows accessing the counter function
   public readonly handler: lambda.Function;
+  // allow accessing the hit counter table
+  public readonly table: dynamodb.TableV2;
 
   constructor(scope: Construct, id: string, props: HitCounterProps) {
     super(scope, id);
@@ -19,6 +21,7 @@ export class HitCounter extends Construct {
     const table = new dynamodb.TableV2(this, "Hits", {
       partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
     });
+    this.table = table;
 
     // defines a new Lambda function
     this.handler = new lambda.Function(this, "HitCounterHandler", {
