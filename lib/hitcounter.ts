@@ -20,6 +20,7 @@ export class HitCounter extends Construct {
       partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
     });
 
+    // defines a new Lambda function
     this.handler = new lambda.Function(this, "HitCounterHandler", {
       runtime: lambda.Runtime.NODEJS_16_X,
       code: lambda.Code.fromAsset("lambda"),
