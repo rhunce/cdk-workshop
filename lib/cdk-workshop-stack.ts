@@ -8,19 +8,19 @@ export class CdkWorkshopStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // defines an AWS Lambda resource
+    // lambda function "HelloHandler"
     const hello = new lambda.Function(this, "HelloHandler", {
       runtime: lambda.Runtime.NODEJS_16_X, // execution environment
       code: lambda.Code.fromAsset("lambda"), // code loaded from the "lambda" directory
       handler: "hello.handler", // file is "hello", function is "handler"
     });
 
-    // defines a new hit counter for our "hello" function
+    // custom construct "HelloHitCounter"
     const helloWithCounter = new HitCounter(this, "HelloHitCounter", {
       downstream: hello,
     });
 
-    // defines an API Gateway REST API resource backed by our "hello" function.
+    // API Gateway "Endpoint"
     new apigateway.LambdaRestApi(this, "Endpoint", {
       handler: helloWithCounter.handler,
     });
