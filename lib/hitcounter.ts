@@ -20,6 +20,7 @@ export class HitCounter extends Construct {
     // define a table to store url hit counts
     const table = new dynamodb.TableV2(this, "Hits", {
       partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     this.table = table;
 
