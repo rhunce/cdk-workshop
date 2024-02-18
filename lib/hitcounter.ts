@@ -20,6 +20,13 @@ export class HitCounter extends Construct {
   public readonly table: dynamodb.TableV2;
 
   constructor(scope: Construct, id: string, props: HitCounterProps) {
+    if (
+      props.readCapacity !== undefined &&
+      (props.readCapacity < 5 || props.readCapacity > 20)
+    ) {
+      throw new Error("readCapacity must be greater than 5 and less than 20");
+    }
+
     super(scope, id);
 
     // define a table to store url hit counts
@@ -29,10 +36,14 @@ export class HitCounter extends Construct {
       encryption: dynamodb.TableEncryptionV2.awsManagedKey(),
       billing: dynamodb.Billing.provisioned({
         readCapacity: dynamodb.Capacity.autoscaled({
+          seedCapacity: props.readCapacity || 5,
           minCapacity: 5,
           maxCapacity: 20,
         }),
-        writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 15 }),
+        writeCapacity: dynamodb.Capacity.autoscaled({
+          seedCapacity: 5,
+          maxCapacity: 15,
+        }),
       }),
     });
     this.table = table;
