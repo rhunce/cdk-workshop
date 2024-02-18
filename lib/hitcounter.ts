@@ -6,6 +6,11 @@ import { Construct } from "constructs";
 export interface HitCounterProps {
   // the function for which we want to count url hits
   downstream: lambda.IFunction;
+  /**
+   * The read capacity units for the table
+   * Must be between 5 and 20, inclusive
+   */
+  readCapacity?: number;
 }
 
 export class HitCounter extends Construct {
@@ -22,6 +27,13 @@ export class HitCounter extends Construct {
       partitionKey: { name: "path", type: dynamodb.AttributeType.STRING },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       encryption: dynamodb.TableEncryptionV2.awsManagedKey(),
+      billing: dynamodb.Billing.provisioned({
+        readCapacity: dynamodb.Capacity.autoscaled({
+          minCapacity: 5,
+          maxCapacity: 20,
+        }),
+        writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 15 }),
+      }),
     });
     this.table = table;
 
